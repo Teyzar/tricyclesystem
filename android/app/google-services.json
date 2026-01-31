@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "267387384317",
+    "project_id": "trikesystem",
+    "storage_bucket": "trikesystem.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:267387384317:android:df4933a3cbdb17797b2994",
+        "android_client_info": {
+          "package_name": "com.example.tricyclesystem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0v1T9Lv7MoQnV7wohVQGFZdaMPNwKNok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
