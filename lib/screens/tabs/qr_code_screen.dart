@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
+import '../../blocs/user/user_bloc.dart';
+import '../../blocs/user/user_state.dart';
 
+/// Driver QR code screen. QR contains only driverId (uid) — no sensitive data.
 class QRCodeScreen extends StatefulWidget {
   const QRCodeScreen({super.key});
 
@@ -18,14 +20,16 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   String? _errorMessage;
 
   @override
-  void initState() {
-    super.initState();
-    _loadExistingQRCode();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final uid = _getDriverId(context);
+    if (uid != null) {
+      _loadExistingQRCode(uid);
+    }
   }
 
-  Future<void> _loadExistingQRCode() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
+  Future<void> _loadExistingQRCode(String uid) async {
+    if (uid.isEmpty) return;
 
     try {
       final qrCodeFile = await _getQRCodeFile(uid);
@@ -135,7 +139,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   }
 
   Future<void> _deleteQRCode() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final uid = _getDriverId(context);
     if (uid == null || _qrCodeFile == null) return;
 
     try {
@@ -167,9 +171,18 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     }
   }
 
+  /// Get driver id from UserBloc (no Firebase Auth in UI).
+  static String? _getDriverId(BuildContext context) {
+    final state = context.read<UserBloc>().state;
+    if (state is UserLoaded && state.user.id != null) {
+      return state.user.id;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final uid = _getDriverId(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -277,9 +290,9 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
             ],
             const SizedBox(height: 32),
             ElevatedButton.icon(
-              onPressed: _isGenerating
+              onPressed: _isGenerating || uid == null
                   ? null
-                  : () => _generateQRCode(uid ?? ''),
+                  : () => _generateQRCode(uid),
               icon: _isGenerating
                   ? const SizedBox(
                       width: 16,

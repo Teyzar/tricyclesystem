@@ -12,7 +12,7 @@ class UsersScreen extends StatelessWidget {
     final FirebaseFirestore user = FirebaseFirestore.instance;
     final users = user
         .collection('users')
-        .where('status', isEqualTo: 'Approved')
+        .where('status', isEqualTo: 'approved')
         .snapshots();
 
     return Scaffold(
@@ -50,7 +50,7 @@ class UsersScreen extends StatelessWidget {
           final users = snapshot.data!.docs;
 
           final countUsers = users
-              .where((user) => user['status'] == 'Approved')
+              .where((u) => (u['status'] ?? '').toString().toLowerCase() == 'approved')
               .length;
 
           if (countUsers == 0) {
@@ -94,15 +94,15 @@ class UsersScreen extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: userData['role'] == 'Student'
+                      color: (userData['role'] ?? '').toString().toLowerCase() == 'student'
                           ? Colors.blue.withOpacity(0.2)
                           : Colors.green.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      userData['role'] ?? 'Unknown',
+                      _displayRole(userData['role']),
                       style: TextStyle(
-                        color: userData['role'] == 'Student'
+                        color: (userData['role'] ?? '').toString().toLowerCase() == 'student'
                             ? Colors.blue[700]
                             : Colors.green[700],
                         fontWeight: FontWeight.w500,
@@ -110,8 +110,6 @@ class UsersScreen extends StatelessWidget {
                     ),
                   ),
                   onTap: () {
-                    // TODO: Implement user details/edit functionality
-
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
@@ -119,10 +117,10 @@ class UsersScreen extends StatelessWidget {
                           user: UserModel(
                             email: userData['email'],
                             name: userData['name'],
-                            role: userData['role'],
+                            role: userData['role']?.toString(),
                             plateNumber: userData['plateNumber'],
                             phone: userData['phone'],
-                            status: userData['status'],
+                            status: userData['status']?.toString(),
                           ),
                         ),
                       ),
@@ -135,5 +133,12 @@ class UsersScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  static String _displayRole(dynamic role) {
+    if (role == null) return 'Unknown';
+    final s = role.toString().toLowerCase();
+    if (s.isEmpty) return 'Unknown';
+    return s[0].toUpperCase() + s.substring(1);
   }
 }

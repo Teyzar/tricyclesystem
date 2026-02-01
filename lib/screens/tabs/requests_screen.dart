@@ -106,12 +106,16 @@ class _RequestsScreenState extends State<RequestsScreen>
               children: [
                 _buildRequestsList(state.requests, 'all'),
                 _buildRequestsList(
-                  state.requests.where((r) => r.status == 'Pending').toList(),
+                  state.requests
+                      .where((r) => (r.status).toLowerCase() == 'pending')
+                      .toList(),
                   'pending',
                 ),
                 _buildRequestsList(
-                  state.requests.where((r) => r.status == 'Approved').toList(),
-                  'Approved',
+                  state.requests
+                      .where((r) => (r.status).toLowerCase() == 'approved')
+                      .toList(),
+                  'approved',
                 ),
               ],
             );
@@ -249,7 +253,7 @@ class _RequestsScreenState extends State<RequestsScreen>
             // ],
 
             // Action buttons
-            if (request.status == 'Pending') ...[
+            if ((request.status).toLowerCase() == 'pending') ...[
               Row(
                 children: [
                   Expanded(

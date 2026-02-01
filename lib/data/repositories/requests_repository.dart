@@ -34,14 +34,14 @@ class RequestsRepository {
     ),
   ];
 
+  /// Admin: list driver registrations (users with role == 'driver'). Status stored lowercase.
   Future<List<RequestModel>> getAllRequests() async {
-    // Simulate API delay
-    final requests = await FirebaseFirestore.instance
+    final snapshot = await FirebaseFirestore.instance
         .collection('users')
-        .where('role', isNotEqualTo: 'Admin')
+        .where('role', isEqualTo: 'driver')
         .get();
 
-    return requests.docs.map((doc) {
+    return snapshot.docs.map((doc) {
       final data = doc.data();
       data['id'] = doc.id;
       return RequestModel.fromJson(data);
@@ -60,7 +60,7 @@ class RequestsRepository {
     }
 
     await docRef.update({
-      'status': 'Approved',
+      'status': 'approved',
       'updatedAt': FieldValue.serverTimestamp(),
     });
 
@@ -90,7 +90,7 @@ class RequestsRepository {
     }
 
     await docRef.update({
-      'status': 'Rejected',
+      'status': 'rejected',
       'updatedAt': FieldValue.serverTimestamp(),
     });
 

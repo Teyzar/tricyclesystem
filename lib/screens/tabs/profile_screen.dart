@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/auth/auth_bloc.dart';
-import '../../blocs/auth/auth_state.dart';
 import '../../blocs/auth/auth_event.dart';
+import '../../blocs/user/user_bloc.dart';
+import '../../blocs/user/user_state.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -23,9 +24,9 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocBuilder<AuthBloc, AuthState>(
+      body: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
-          if (state is AuthAuthenticated) {
+          if (state is UserLoaded) {
             final user = state.user;
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -107,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            user.role ?? 'Unknown Role',
+                            _displayRole(user.role),
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w500,
@@ -239,5 +240,10 @@ class ProfileScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  static String _displayRole(String? role) {
+    if (role == null || role.isEmpty) return 'Unknown Role';
+    return role[0].toUpperCase() + role.substring(1).toLowerCase();
   }
 }

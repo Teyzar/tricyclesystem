@@ -1,0 +1,19 @@
+rules_version = '2';
+// Firestore Security Rules for Tricycle System
+// Deploy: firebase deploy --only firestore (ensure firebase.json has firestore config)
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // users/{uid} — each user can only read/write their own document
+    // Role and status checks (e.g. driver approved) are enforced in app routing/BLoC
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Add further collections (e.g. rides) with similar patterns:
+    // - request.auth != null for any write
+    // - Driver-only: enforce in app (only approved drivers reach driver-home)
+    // - Admin-only: enforce in app (only admin role reaches /admin)
+  }
+}
